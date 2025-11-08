@@ -1,0 +1,58 @@
+<mat-toolbar class="foodu-toolbar">
+  <div class="toolbar-left">
+    <button mat-icon-button class="menu-btn" (click)="sidenav.toggle()">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <img src="logo.png" alt="Foodu Logo" class="logo" />
+  </div>
+
+  <span class="spacer"></span>
+
+  <div class="toolbar-right">
+    <label class="user-name">{{ usuarioNombre }}</label>
+    <button mat-icon-button (click)="cerrarSesion()" class="logout-btn" matTooltip="Cerrar sesión">
+      <mat-icon>logout</mat-icon>
+    </button>
+  </div>
+</mat-toolbar>
+
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #sidenav mode="side" opened class="sidenav">
+    <mat-nav-list>
+
+      <a mat-list-item routerLink="/layout/home" routerLinkActive="active-link">
+        <mat-icon matListIcon>dashboard</mat-icon>
+        <span matLine>Home</span>
+      </a>
+
+      <!-- 🍽️ Restaurante (enlace directo) -->
+      <a mat-list-item routerLink="/layout/restaurante" routerLinkActive="active-link" class="menu-item">
+        <mat-icon matListIcon>restaurant</mat-icon>
+        <span matLine>Restaurante</span>
+      </a>
+      <!-- 🍽️ Fin Restaurante -->
+
+      <a mat-list-item routerLink="/productos" routerLinkActive="active-link">
+        <mat-icon matListIcon>restaurant_menu</mat-icon>
+        <span matLine>Productos</span>
+      </a>
+
+      <a mat-list-item routerLink="/clientes" routerLinkActive="active-link">
+        <mat-icon matListIcon>people</mat-icon>
+        <span matLine>Clientes</span>
+      </a>
+
+      <a mat-list-item routerLink="/configuracion" routerLinkActive="active-link">
+        <mat-icon matListIcon>settings</mat-icon>
+        <span matLine>Configuración</span>
+      </a>
+
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <div class="content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -1,0 +1,55 @@
+<section class="login-container">
+  <div class="login-card">
+    <div class="login-logo">
+      <img src="logo.png" alt="Foodu Logo">
+    </div>
+
+    <h2 class="titulo-fuego">Bienvenido a <span class="foodu-highlight">Foodu</span></h2>
+    <p class="subtitle">Gestiona tus pedidos y cocina como un profesional 🍽️</p>
+
+    <form [formGroup]="formLogin" (ngSubmit)="iniciarSesion()">
+      <!-- Campo de usuario -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Usuario</mat-label>
+        <input matInput formControlName="usuario" placeholder="Ingrese su usuario" autocomplete="username" required>
+        <mat-icon matSuffix>person</mat-icon>
+        <mat-error *ngIf="formLogin.get('usuario')?.hasError('required')">
+          El usuario es obligatorio
+        </mat-error>
+        <mat-error *ngIf="formLogin.get('usuario')?.hasError('minlength')">
+          El usuario debe tener al menos 3 caracteres
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Campo de contraseña -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Contraseña</mat-label>
+        <input matInput [type]="ocultarPassword ? 'password' : 'text'" formControlName="contrasena"
+               placeholder="Ingrese su contraseña" autocomplete="current-password" required>
+        <button mat-icon-button matSuffix type="button" (click)="ocultarPassword = !ocultarPassword">
+          <mat-icon>{{ ocultarPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="formLogin.get('contrasena')?.hasError('required')">
+          La contraseña es obligatoria
+        </mat-error>
+        <mat-error *ngIf="formLogin.get('contrasena')?.hasError('minlength')">
+          La contraseña debe tener al menos 3 caracteres
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Botón de login -->
+      <button mat-raised-button color="primary" class="full-width login-btn"
+              [disabled]="mostrarLoading || formLogin.invalid">
+        <div class="button-content">
+          <mat-progress-spinner *ngIf="mostrarLoading" mode="indeterminate" diameter="20" color="accent"></mat-progress-spinner>
+          <span *ngIf="!mostrarLoading">Iniciar sesión</span>
+        </div>
+      </button>
+    </form>
+
+    <div class="footer-links">
+      <small><a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a></small>
+      <small>¿No tienes cuenta? <a href="#" class="register-link">Regístrate aquí</a></small>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,95 @@
+.foodu-toolbar {
+  background: #ffffff !important;
+  color: #FF6B35;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  height: 70px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+
+  .logo {
+    height: 50px;
+    margin-left: 10px;
+  }
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+
+  .user-name {
+    font-weight: 500;
+    color: #2E2E2E;
+    margin-right: 8px;
+  }
+
+  .menu-btn,
+  .logout-btn {
+    color: #FF6B35;
+    transition: 0.3s;
+  }
+
+  .menu-btn:hover,
+  .logout-btn:hover {
+    color: #FF8C5A;
+  }
+}
+
+.sidenav-container {
+  height: 100vh;
+  background: #F9F9F9;
+}
+
+.sidenav {
+  width: 230px;
+  background: #ffffff;
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.03);
+  padding-top: 10px;
+
+  a[mat-list-item] {
+    color: #2E2E2E;
+    font-weight: 500;
+    border-radius: 8px;
+    margin: 4px 8px;
+    transition: background 0.3s, color 0.3s;
+
+    mat-icon {
+      margin-right: 10px;
+      color: #FF6B35;
+    }
+
+    &:hover {
+      background: #FF8C5A;
+      color: #ffffff;
+
+      mat-icon {
+        color: #ffffff;
+      }
+    }
+
+    &.active-link {
+      background: #FF6B35;
+      color: #ffffff;
+
+      mat-icon {
+        color: #ffffff;
+      }
+    }
+  }
+
+  .submenu {
+    margin-left: 30px;
+
+    a[mat-list-item] {
+      font-size: 14px;
+      margin: 2px 0;
+    }
+  }
+}
+
+.content {
+  background: #F9F9F9;
+  height: calc(100vh - 70px);
+  padding: 20px;
+  overflow-y: auto;
+}
