@@ -6,6 +6,7 @@ import { App } from './app';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { UsuarioModule } from './usuario/usuario-module';
+import { RestauranteModule } from './restaurante/restaurante-module';
 
 
 
@@ -16,7 +17,7 @@ import { UsuarioModule } from './usuario/usuario-module';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule, HttpClientModule, CommonModule, BrowserAnimationsModule, UsuarioModule
+    AppRoutingModule, HttpClientModule, CommonModule, BrowserAnimationsModule, UsuarioModule, RestauranteModule
   ],
   providers: [
     provideBrowserGlobalErrorListeners()

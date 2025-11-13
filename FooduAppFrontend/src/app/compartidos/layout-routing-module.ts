@@ -4,6 +4,7 @@ import { Router, RouterModule, Routes } from '@angular/router';
 import { Layout } from './layout/layout';
 import { Home } from '../compartidos/home/home';
 import { Restaurante } from '../restaurante/pages/restaurante/restaurante';
+import {} from '../restaurante/restaurante-module';
 
 const routes: Routes = [
   {

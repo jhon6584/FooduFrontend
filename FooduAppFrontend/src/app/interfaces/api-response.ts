@@ -1,5 +1,5 @@
 export interface ApiResponse {
-    StatusCode: number,
+    statusCode: number,
     isExitoso: boolean,
     mensaje: string,
     resultado: any

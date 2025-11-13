@@ -10,7 +10,7 @@ import { Sesion } from '../interfaces/sesion';
 })
 export class UsuarioService {
   // baseUrl: string = environment.apiUrl + 'usuario/';
-  private baseUrl: string = `${environment.apiUrl}/usuario`;
+  private baseUrl: string = `${environment.apiUrl}usuario`;
 
   constructor(private http: HttpClient) { }
 

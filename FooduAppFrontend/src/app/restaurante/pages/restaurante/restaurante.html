@@ -1,77 +1,68 @@
 <div class="restaurante-layout">
   <!-- 📊 Barra de pestañas -->
   <div class="tabs-bar">
-    <button
-      mat-button
-      [class.active]="selectedTab === 'mostrador'"
-      (click)="selectTab('mostrador')"
-    >
+    <button mat-button [class.active]="selectedTab === 'mostrador'" (click)="selectTab('mostrador')">
       Mostrador
     </button>
 
-    <button
-      mat-button
-      [class.active]="selectedTab === 'domicilio'"
-      (click)="selectTab('domicilio')"
-    >
+    <button mat-button [class.active]="selectedTab === 'domicilio'" (click)="selectTab('domicilio')">
       Domicilio
     </button>
 
-    <button
-      mat-raised-button
-      color="primary"
-      class="nuevo-btn"
-      (click)="toggleNuevoPedido()"
-    >
-      {{ mostrarNuevoPedido ? '✕ Cerrar' : '+ Nuevo Pedido' }}
+    <button mat-raised-button color="primary" class="nuevo-btn" (click)="abrirModalNuevoPedido()">
+      {{ mostrarModalNuevoPedido ? '✕ Cerrar Panel' : '+ Nuevo Pedido' }}
     </button>
   </div>
 
-  <!-- 🧱 CONTENEDOR FLEX: TABLAS + PANEL NUEVO PEDIDO -->
+  <!-- 🧱 CONTENEDOR PRINCIPAL: TABLAS + PANEL -->
   <div class="tablas-y-panel">
-    <!-- 🧾 TABLAS -->
+
+    <!-- 🧾 TABLAS (se ajusta automáticamente) -->
     <div class="tablas-container">
-      
       <!-- 🟠 MOSTRADOR -->
       <ng-container *ngIf="selectedTab === 'mostrador'">
-        
         <!-- TABLA PENDIENTES -->
         <div class="tabla-seccion">
           <h3>Pendientes</h3>
           <table mat-table [dataSource]="pendientes" class="mat-elevation-z2 tabla-foodu">
-            
-            <!-- Columna ID -->
             <ng-container matColumnDef="id">
               <th mat-header-cell *matHeaderCellDef> ID </th>
               <td mat-cell *matCellDef="let element"> {{element.id}} </td>
             </ng-container>
 
-            <!-- Columna Hora -->
             <ng-container matColumnDef="hora">
               <th mat-header-cell *matHeaderCellDef> Hora </th>
               <td mat-cell *matCellDef="let element"> {{element.hora}} </td>
             </ng-container>
 
-            <!-- Columna Estado -->
             <ng-container matColumnDef="estado">
               <th mat-header-cell *matHeaderCellDef> Estado </th>
               <td mat-cell *matCellDef="let element"> {{element.estado}} </td>
             </ng-container>
 
-            <!-- Columna Cliente -->
             <ng-container matColumnDef="cliente">
               <th mat-header-cell *matHeaderCellDef> Cliente </th>
               <td mat-cell *matCellDef="let element"> {{element.cliente}} </td>
             </ng-container>
 
-            <!-- Columna Total -->
             <ng-container matColumnDef="total">
               <th mat-header-cell *matHeaderCellDef> Total </th>
               <td mat-cell *matCellDef="let element"> ${{element.total | number}} </td>
             </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="columnas"></tr>
-            <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+            <ng-container matColumnDef="acciones">
+              <th mat-header-cell *matHeaderCellDef> Acciones </th>
+              <td mat-cell *matCellDef="let element">
+                <button mat-raised-button color="primary" 
+                        (click)="enviarPedido(element, 'pendientes')"
+                        class="btn-enviado">
+                  Enviado
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="columnasMostrador"></tr>
+            <tr mat-row *matRowDef="let row; columns: columnasMostrador;"></tr>
           </table>
         </div>
 
@@ -79,7 +70,6 @@
         <div class="tabla-seccion">
           <h3>En curso</h3>
           <table mat-table [dataSource]="enCurso" class="mat-elevation-z2 tabla-foodu">
-            
             <ng-container matColumnDef="id">
               <th mat-header-cell *matHeaderCellDef> ID </th>
               <td mat-cell *matCellDef="let element"> {{element.id}} </td>
@@ -105,8 +95,19 @@
               <td mat-cell *matCellDef="let element"> ${{element.total | number}} </td>
             </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="columnas"></tr>
-            <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+            <ng-container matColumnDef="acciones">
+              <th mat-header-cell *matHeaderCellDef> Acciones </th>
+              <td mat-cell *matCellDef="let element">
+                <button mat-raised-button color="primary" 
+                        (click)="enviarPedido(element, 'enCurso')"
+                        class="btn-enviado">
+                  Enviado
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="columnasMostrador"></tr>
+            <tr mat-row *matRowDef="let row; columns: columnasMostrador;"></tr>
           </table>
         </div>
 
@@ -114,7 +115,6 @@
         <div class="tabla-seccion">
           <h3>Cerradas (Últimas 5)</h3>
           <table mat-table [dataSource]="cerradas" class="mat-elevation-z2 tabla-foodu">
-            
             <ng-container matColumnDef="id">
               <th mat-header-cell *matHeaderCellDef> ID </th>
               <td mat-cell *matCellDef="let element"> {{element.id}} </td>
@@ -140,33 +140,36 @@
               <td mat-cell *matCellDef="let element"> ${{element.total | number}} </td>
             </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="columnas"></tr>
-            <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+            <tr mat-header-row *matHeaderRowDef="columnasSoloLectura"></tr>
+            <tr mat-row *matRowDef="let row; columns: columnasSoloLectura;"></tr>
           </table>
         </div>
       </ng-container>
 
       <!-- 🏍️ DOMICILIO -->
       <ng-container *ngIf="selectedTab === 'domicilio'">
-
         <!-- TABLA PENDIENTES DOMICILIO -->
         <div class="tabla-seccion">
           <h3>Pendientes</h3>
           <table mat-table [dataSource]="pendientesDomicilio" class="mat-elevation-z2 tabla-foodu">
-            
             <ng-container matColumnDef="id">
               <th mat-header-cell *matHeaderCellDef> ID </th>
               <td mat-cell *matCellDef="let element"> {{element.id}} </td>
             </ng-container>
 
             <ng-container matColumnDef="hora">
-              <th mat-header-cell *matHeaderCellDef> Hora </th>
+              <th mat-header-cell *matHeaderCellDef> Hora Inicio </th>
               <td mat-cell *matCellDef="let element"> {{element.hora}} </td>
             </ng-container>
 
-            <ng-container matColumnDef="estado">
-              <th mat-header-cell *matHeaderCellDef> Estado </th>
-              <td mat-cell *matCellDef="let element"> {{element.estado}} </td>
+            <ng-container matColumnDef="direccion">
+              <th mat-header-cell *matHeaderCellDef> Direccion </th>
+              <td mat-cell *matCellDef="let element"> {{element.direccion}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="telefono">
+              <th mat-header-cell *matHeaderCellDef> Telefono </th>
+              <td mat-cell *matCellDef="let element"> {{element.telefono}} </td>
             </ng-container>
 
             <ng-container matColumnDef="cliente">
@@ -174,13 +177,34 @@
               <td mat-cell *matCellDef="let element"> {{element.cliente}} </td>
             </ng-container>
 
+            <ng-container matColumnDef="repartidor">
+              <th mat-header-cell *matHeaderCellDef> Repartidor </th>
+              <td mat-cell *matCellDef="let element"> {{element.repartidor}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="tiempo">
+              <th mat-header-cell *matHeaderCellDef> Tiempo </th>
+              <td mat-cell *matCellDef="let element"> {{element.tiempo}} </td>
+            </ng-container>
+
             <ng-container matColumnDef="total">
               <th mat-header-cell *matHeaderCellDef> Total </th>
               <td mat-cell *matCellDef="let element"> ${{element.total | number}} </td>
             </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="columnas"></tr>
-            <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+            <ng-container matColumnDef="acciones">
+              <th mat-header-cell *matHeaderCellDef> Acciones </th>
+              <td mat-cell *matCellDef="let element">
+                <button mat-raised-button color="primary" 
+                        (click)="enviarPedido(element, 'pendientesDomicilio')"
+                        class="btn-enviado">
+                  Enviado
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="columnasDomicilioPendientes"></tr>
+            <tr mat-row *matRowDef="let row; columns: columnasDomicilioPendientes;"></tr>
           </table>
         </div>
 
@@ -188,7 +212,6 @@
         <div class="tabla-seccion">
           <h3>En preparación</h3>
           <table mat-table [dataSource]="enPreparacion" class="mat-elevation-z2 tabla-foodu">
-            
             <ng-container matColumnDef="id">
               <th mat-header-cell *matHeaderCellDef> ID </th>
               <td mat-cell *matCellDef="let element"> {{element.id}} </td>
@@ -214,8 +237,19 @@
               <td mat-cell *matCellDef="let element"> ${{element.total | number}} </td>
             </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="columnas"></tr>
-            <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+            <ng-container matColumnDef="acciones">
+              <th mat-header-cell *matHeaderCellDef> Acciones </th>
+              <td mat-cell *matCellDef="let element">
+                <button mat-raised-button color="primary" 
+                        (click)="enviarPedido(element, 'enPreparacion')"
+                        class="btn-enviado">
+                  Enviado
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="columnasDomicilioGenerales"></tr>
+            <tr mat-row *matRowDef="let row; columns: columnasDomicilioGenerales;"></tr>
           </table>
         </div>
 
@@ -223,7 +257,6 @@
         <div class="tabla-seccion">
           <h3>Enviados</h3>
           <table mat-table [dataSource]="enviados" class="mat-elevation-z2 tabla-foodu">
-            
             <ng-container matColumnDef="id">
               <th mat-header-cell *matHeaderCellDef> ID </th>
               <td mat-cell *matCellDef="let element"> {{element.id}} </td>
@@ -249,8 +282,8 @@
               <td mat-cell *matCellDef="let element"> ${{element.total | number}} </td>
             </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="columnas"></tr>
-            <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+            <tr mat-header-row *matHeaderRowDef="columnasSoloLectura"></tr>
+            <tr mat-row *matRowDef="let row; columns: columnasSoloLectura;"></tr>
           </table>
         </div>
 
@@ -258,7 +291,6 @@
         <div class="tabla-seccion">
           <h3>Cerrados</h3>
           <table mat-table [dataSource]="cerradosDomicilio" class="mat-elevation-z2 tabla-foodu">
-            
             <ng-container matColumnDef="id">
               <th mat-header-cell *matHeaderCellDef> ID </th>
               <td mat-cell *matCellDef="let element"> {{element.id}} </td>
@@ -284,86 +316,19 @@
               <td mat-cell *matCellDef="let element"> ${{element.total | number}} </td>
             </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="columnas"></tr>
-            <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+            <tr mat-header-row *matHeaderRowDef="columnasSoloLectura"></tr>
+            <tr mat-row *matRowDef="let row; columns: columnasSoloLectura;"></tr>
           </table>
         </div>
       </ng-container>
     </div>
 
-    <!-- 📋 PANEL NUEVO PEDIDO -->
-    <div class="nuevo-pedido-panel" *ngIf="mostrarNuevoPedido">
-      <h3>Nuevo Pedido - {{selectedTab === 'mostrador' ? 'Mostrador' : 'Domicilio'}}</h3>
-
-      <!-- MOSTRADOR -->
-      <form *ngIf="selectedTab === 'mostrador'" class="formulario-pedido" (ngSubmit)="crearPedido()">
-        <mat-form-field appearance="outline" class="campo">
-          <mat-label>Cliente</mat-label>
-          <input matInput placeholder="Nombre del cliente" required>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="campo">
-          <mat-label>Tipo de entrega</mat-label>
-          <mat-select>
-            <mat-option value="tienda">Recoger en tienda</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="campo">
-          <mat-label>Observación</mat-label>
-          <textarea matInput rows="2"></textarea>
-        </mat-form-field>
-
-        <button mat-raised-button color="primary" class="btn-crear" type="submit">
-          Crear Pedido
-        </button>
-      </form>
-
-      <!-- DOMICILIO -->
-      <form *ngIf="selectedTab === 'domicilio'" class="formulario-pedido" (ngSubmit)="crearPedido()">
-        <mat-form-field appearance="outline" class="campo">
-          <mat-label>Teléfono</mat-label>
-          <input matInput required type="tel">
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="campo">
-          <mat-label>Cliente</mat-label>
-          <input matInput required>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="campo">
-          <mat-label>Calle</mat-label>
-          <input matInput placeholder="Calle" required>
-        </mat-form-field>
-
-        <div class="direccion-grupo">
-          <mat-form-field appearance="outline" class="campo">
-            <mat-label>Número</mat-label>
-            <input matInput required>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="campo">
-            <mat-label>Piso / Depto</mat-label>
-            <input matInput>
-          </mat-form-field>
-        </div>
-
-        <mat-form-field appearance="outline" class="campo">
-          <mat-label>Barrio</mat-label>
-          <input matInput required>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="campo">
-          <mat-label>Observación</mat-label>
-          <textarea matInput rows="2"></textarea>
-        </mat-form-field>
-
-        <mat-checkbox>Guardar cliente</mat-checkbox>
-
-        <button mat-raised-button color="primary" class="btn-crear" type="submit">
-          Crear Pedido
-        </button>
-      </form>
+    <!-- 📋 PANEL LATERAL (derecha) -->
+    <div class="panel-lateral" *ngIf="mostrarModalNuevoPedido">
+      <app-modal-restaurante [mostrar]="mostrarModalNuevoPedido" [tipoPedido]="selectedTab"
+        (pedidoCreado)="onPedidoCreado($event)" (cerrarModal)="cerrarModalNuevoPedido()">
+      </app-modal-restaurante>
     </div>
+
   </div>
 </div>

@@ -1,0 +1,96 @@
+<div class="panel-nuevo-pedido">
+  <!-- Encabezado del panel -->
+  <div class="panel-header">
+    <h3>Nuevo Pedido - {{ tipoPedido === 'mostrador' ? 'Mostrador' : 'Domicilio' }}</h3>
+    <button mat-icon-button (click)="onCerrar()" class="close-btn" matTooltip="Cerrar panel">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Contenido del formulario -->
+  <div class="panel-content">
+    <!-- 🏪 MOSTRADOR -->
+    <form *ngIf="tipoPedido === 'mostrador'" [formGroup]="formMostrador" class="formulario-pedido" (ngSubmit)="crearPedido()">
+      <mat-form-field appearance="outline" class="campo-full">
+        <mat-label>Cliente</mat-label>
+        <input matInput placeholder="Nombre del cliente" formControlName="cliente" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="campo-full">
+        <mat-label>Tipo de entrega</mat-label>
+        <mat-select formControlName="tipoEntrega">
+          <mat-option value="tienda">Recoger en tienda</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="campo-full">
+        <mat-label>Observación</mat-label>
+        <textarea matInput rows="3" formControlName="observacion" placeholder="Observaciones adicionales..."></textarea>
+      </mat-form-field>
+
+      <div class="acciones-panel">
+        <button mat-raised-button color="primary" class="btn-crear" type="submit" [disabled]="formMostrador.invalid">
+          Crear Pedido
+        </button>
+        <button mat-stroked-button type="button" (click)="limpiarFormularios()">
+          Limpiar
+        </button>
+      </div>
+    </form>
+
+    <!-- 🏠 DOMICILIO -->
+    <form *ngIf="tipoPedido === 'domicilio'" [formGroup]="formDomicilio" class="formulario-pedido" (ngSubmit)="crearPedido()">
+      <mat-form-field appearance="outline" class="campo-full">
+        <mat-label>Teléfono</mat-label>
+        <input matInput formControlName="telefono" maxlength="10" placeholder="Ej: 3005678901" />
+        <mat-hint>Ingresa el teléfono para buscar cliente</mat-hint>
+      </mat-form-field>
+
+      <!-- Lista de clientes encontrados -->
+      <div *ngIf="clientesEncontrados.length > 0" class="lista-clientes">
+        <h4>Clientes encontrados:</h4>
+        <div *ngFor="let cliente of clientesEncontrados" 
+             (click)="seleccionarCliente(cliente)" 
+             class="cliente-item">
+          <strong>📞 {{ cliente.celular }} — {{ cliente.nombre }}</strong>
+          <br />
+          <small>{{ cliente.direccion }}</small>
+        </div>
+      </div>
+
+      <mat-form-field appearance="outline" class="campo-full">
+        <mat-label>Cliente</mat-label>
+        <input matInput formControlName="cliente" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="campo-full">
+        <mat-label>Dirección</mat-label>
+        <input matInput placeholder="Ej. Calle 10 #12-34" formControlName="calle" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="campo-full">
+        <mat-label>Observación</mat-label>
+        <textarea matInput rows="3" formControlName="observacion" placeholder="Instrucciones de entrega..."></textarea>
+      </mat-form-field>
+
+      <mat-checkbox formControlName="guardarCliente" class="checkbox-guardar">
+        {{ clienteExiste ? 'Actualizar cliente en el sistema' : 'Guardar cliente en el sistema' }}
+      </mat-checkbox>
+
+      <!-- Mensajes -->
+      <div *ngIf="mensaje" class="mensaje-panel" [class.error]="mensaje.includes('❌')">
+        {{ mensaje }}
+      </div>
+
+      <!-- Acciones -->
+      <div class="acciones-panel">
+        <button mat-raised-button color="primary" class="btn-crear" type="submit" [disabled]="formDomicilio.invalid">
+          Crear Pedido
+        </button>
+        <button mat-stroked-button type="button" (click)="limpiarFormularios()">
+          Limpiar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

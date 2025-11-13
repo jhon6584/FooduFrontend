@@ -2,18 +2,18 @@
 .restaurante-layout {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  padding: 1.5rem;
+  height: 100vh;
   background: #f9f9f9;
-  min-height: 100vh;
+  overflow: hidden;
 }
 
 /* 🧱 Contenedor flex principal (tablas + panel lateral) */
 .tablas-y-panel {
   display: flex;
-  align-items: flex-start;
+  flex: 1;
   gap: 1.5rem;
-  margin-top: 1rem;
+  padding: 0 1.5rem 1.5rem 1.5rem;
+  min-height: 0; /* Importante para el scroll */
 }
 
 /* 🎯 Barra superior de pestañas */
@@ -22,6 +22,8 @@
   align-items: center;
   justify-content: flex-start;
   gap: 1rem;
+  padding: 1.5rem 1.5rem 0 1.5rem;
+  background: #f9f9f9;
 }
 
 .tabs-bar button {
@@ -41,12 +43,34 @@
   border-radius: 10px;
 }
 
-/* 📦 Contenedor de tablas */
+/* 📦 Contenedor de tablas - se ajusta cuando el panel está abierto */
 .tablas-container {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  overflow-y: auto;
+  transition: all 0.3s ease;
+}
+
+/* Cuando el panel lateral está abierto, las tablas se achican */
+.panel-lateral:not(:empty) ~ .tablas-container {
+  flex: 0 0 65%;
+}
+
+/* 🧱 PANEL LATERAL */
+.panel-lateral {
+  flex: 0 0 35%;
+  min-width: 400px;
+  max-width: 500px;
+  background: white;
+  border-left: 3px solid #ff6b35;
+  box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
+  border-radius: 12px 0 0 12px;
+  animation: slideInFromRight 0.3s ease-out;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
 }
 
 /* 📋 Sección individual de tabla */
@@ -56,6 +80,7 @@
   padding: 1rem 1.2rem;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  flex-shrink: 0;
 }
 
 .tabla-seccion:hover {
@@ -92,76 +117,11 @@
   padding: 0.6rem 0.8rem;
 }
 
-/* 🧾 Panel nuevo pedido */
-.nuevo-pedido-panel {
-  flex: 0 0 380px;
-  background: #fff;
-  border-left: 3px solid #ff6b35;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-  padding: 1.5rem;
-  border-radius: 12px;
-  animation: slideIn 0.3s ease-out;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  max-height: 85vh;
-  overflow-y: auto;
-}
-
-/* 🧡 Título */
-.nuevo-pedido-panel h3 {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #ff6b35;
-  text-transform: uppercase;
-  margin-bottom: 1rem;
-  border-bottom: 2px solid #ff6b35;
-  padding-bottom: 0.5rem;
-}
-
-/* 📋 Formulario */
-.formulario-pedido {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.campo,
-mat-form-field {
-  width: 100%;
-  display: block;
-}
-
-.direccion-grupo {
-  display: flex;
-  gap: 0.8rem;
-}
-
-/* 🧍 Checkbox y botón */
-mat-checkbox {
-  margin-top: 0.5rem;
-}
-
-.btn-crear {
-  background-color: #ff6b35 !important;
-  color: #fff !important;
-  border-radius: 6px;
-  font-weight: 600;
-  width: 100%;
-  height: 44px;
-  font-size: 0.95rem;
-  margin-top: 0.5rem;
-}
-
-.btn-crear:hover {
-  background-color: #ff8c5a !important;
-}
-
-/* 🎞️ Animación */
-@keyframes slideIn {
+/* 🎞️ Animaciones */
+@keyframes slideInFromRight {
   from {
     opacity: 0;
-    transform: translateX(50px);
+    transform: translateX(100%);
   }
   to {
     opacity: 1;
@@ -169,15 +129,74 @@ mat-checkbox {
   }
 }
 
+@keyframes slideOutToRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
 /* 📱 Responsividad */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .tablas-y-panel {
     flex-direction: column;
   }
+  
+  .panel-lateral {
+    flex: 0 0 auto;
+    min-width: 100%;
+    max-width: 100%;
+    height: 60vh;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 20px 20px 0 0;
+    z-index: 1000;
+    animation: slideInFromBottom 0.3s ease-out;
+  }
+  
+  .panel-lateral:not(:empty) ~ .tablas-container {
+    flex: 1;
+    margin-bottom: 20px;
+  }
+}
 
-  .nuevo-pedido-panel {
+@keyframes slideInFromBottom {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .restaurante-layout {
+    padding: 0;
+  }
+  
+  .tabs-bar {
+    padding: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .tablas-y-panel {
+    padding: 0 1rem 1rem 1rem;
+  }
+  
+  .nuevo-btn {
+    margin-left: 0;
     width: 100%;
-    max-height: none;
+    order: 3;
+  }
+  
+  .panel-lateral {
+    min-width: 100%;
   }
 }
 
@@ -185,4 +204,73 @@ mat-checkbox {
 button.mat-button,
 button.mat-raised-button {
   border-radius: 8px !important;
+}
+
+/* Estilos para el contenido del panel lateral dentro del modal */
+.panel-lateral ::ng-deep .panel-nuevo-pedido {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-lateral ::ng-deep .panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e0e0e0;
+  background: #fafafa;
+  flex-shrink: 0;
+}
+
+.panel-lateral ::ng-deep .panel-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.panel-lateral ::ng-deep .panel-content {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.panel-lateral ::ng-deep .formulario-pedido {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.panel-lateral ::ng-deep .campo-full {
+  width: 100%;
+}
+
+/* 🔥 Estilos para el botón Enviado */
+.btn-enviado {
+  background: linear-gradient(135deg, #4CAF50, #45a049) !important;
+  color: white !important;
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 0 12px;
+  height: 32px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+  transition: all 0.3s ease;
+  min-width: 80px;
+}
+
+.btn-enviado:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(76, 175, 80, 0.4);
+}
+
+.btn-enviado:active {
+  transform: translateY(0);
+}
+
+/* Ajuste de espaciado en las celdas de acciones */
+.mat-column-acciones {
+  width: 100px;
+  text-align: center;
 }

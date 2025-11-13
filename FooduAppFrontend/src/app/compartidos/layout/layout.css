@@ -16,12 +16,6 @@
     flex: 1 1 auto;
   }
 
-  .user-name {
-    font-weight: 500;
-    color: #2E2E2E;
-    margin-right: 8px;
-  }
-
   .menu-btn,
   .logout-btn {
     color: #FF6B35;
@@ -31,6 +25,84 @@
   .menu-btn:hover,
   .logout-btn:hover {
     color: #FF8C5A;
+  }
+}
+
+/* Estilos mejorados para la información del usuario y fecha/hora - EN LÍNEA */
+.user-info {
+  display: flex;
+  flex-direction: row; /* Cambiado de column a row */
+  align-items: center;
+  margin-right: 20px;
+  padding: 8px 16px;
+  background: rgba(255, 107, 53, 0.08);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 107, 53, 0.15);
+  gap: 12px; /* Espacio entre nombre y fecha/hora */
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 14px;
+  color: #2E2E2E;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.fecha-hora {
+  font-size: 12px;
+  font-weight: 500;
+  color: #FF6B35;
+  line-height: 1.2;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+/* Separador opcional entre nombre y fecha/hora */
+.user-info::before {
+  content: "|";
+  color: rgba(255, 107, 53, 0.4);
+  font-weight: 300;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 768px) {
+  .user-info {
+    margin-right: 12px;
+    padding: 6px 12px;
+    gap: 8px;
+  }
+  
+  .user-name {
+    font-size: 13px;
+  }
+  
+  .fecha-hora {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 600px) {
+  .user-info {
+    flex-direction: column; /* En móviles muy pequeños, volver a columna */
+    gap: 4px;
+    min-width: 120px;
+  }
+  
+  .user-info::before {
+    content: ""; /* Quitar el separador en móvil */
+  }
+}
+
+@media (max-width: 480px) {
+  .user-info {
+    display: none;
   }
 }
 

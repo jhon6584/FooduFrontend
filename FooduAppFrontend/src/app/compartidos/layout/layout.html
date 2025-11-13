@@ -9,7 +9,11 @@
   <span class="spacer"></span>
 
   <div class="toolbar-right">
-    <label class="user-name">{{ usuarioNombre }}</label>
+    <!-- Contenedor para nombre de usuario y fecha/hora -->
+      <div class="fecha-hora">{{ fechaHoraActual }}</div>
+    <div class="user-info">
+      <label class="user-name">{{ usuarioNombre }}</label>
+    </div>
     <button mat-icon-button (click)="cerrarSesion()" class="logout-btn" matTooltip="Cerrar sesión">
       <mat-icon>logout</mat-icon>
     </button>

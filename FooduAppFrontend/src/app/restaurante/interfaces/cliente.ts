@@ -1,6 +1,6 @@
 export interface Cliente {
-    id: number;
+    clienteID?: number;
     nombre: string;
     celular: string;
-    direccion: string;
+    direccion?: string;
 }
