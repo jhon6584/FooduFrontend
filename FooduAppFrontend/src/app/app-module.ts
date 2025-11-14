@@ -11,9 +11,11 @@ import { RestauranteModule } from './restaurante/restaurante-module';
 
 
 
+
 @NgModule({
   declarations: [
-    App
+    App,
+    
   ],
   imports: [
     BrowserModule,

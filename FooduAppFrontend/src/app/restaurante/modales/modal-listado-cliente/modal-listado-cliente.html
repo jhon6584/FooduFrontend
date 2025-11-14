@@ -1,0 +1,48 @@
+<div class="modal-listado-cliente">
+  <h2 mat-dialog-title>
+    {{ esEdicion ? 'Editar Cliente' : 'Nuevo Cliente' }}
+  </h2>
+
+  <mat-dialog-content>
+    <form [formGroup]="formulario" class="formulario">
+      <mat-form-field appearance="outline" class="campo-full">
+        <mat-label>Nombre</mat-label>
+        <input matInput formControlName="nombre" placeholder="Nombre completo">
+        <mat-error *ngIf="formulario.get('nombre')?.hasError('required')">
+          El nombre es requerido
+        </mat-error>
+        <mat-error *ngIf="formulario.get('nombre')?.hasError('minlength')">
+          El nombre debe tener al menos 2 caracteres
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="campo-full">
+        <mat-label>Teléfono</mat-label>
+        <input matInput formControlName="celular" 
+               placeholder="Ej: 3001234567" maxlength="10">
+        <mat-hint>10 dígitos sin espacios</mat-hint>
+        <mat-error *ngIf="formulario.get('celular')?.hasError('required')">
+          El teléfono es requerido
+        </mat-error>
+        <mat-error *ngIf="formulario.get('celular')?.hasError('pattern')">
+          El teléfono debe tener 10 dígitos
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="campo-full">
+        <mat-label>Dirección</mat-label>
+        <textarea matInput formControlName="direccion" 
+                  placeholder="Dirección completa" rows="3"></textarea>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="cancelar()">Cancelar</button>
+    <button mat-raised-button color="primary" 
+            (click)="guardarCliente()" 
+            [disabled]="!formulario.valid || cargando">
+      {{ cargando ? 'Guardando...' : (esEdicion ? 'Actualizar' : 'Crear') }}
+    </button>
+  </mat-dialog-actions>
+</div>

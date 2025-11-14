@@ -7,6 +7,7 @@ import { Home } from './home/home';
 import { MaterialModule } from '../material/material-module';
 import { AppRoutingModule } from '../app-routing-module';
 import { LayoutRoutingModule } from './layout-routing-module';
+import { ListadoCliente } from '../restaurante/pages/listado-cliente/listado-cliente';
 
 
 
@@ -16,6 +17,7 @@ import { LayoutRoutingModule } from './layout-routing-module';
   declarations: [
     Layout,
     Home,
+  
     
   ],
   imports: [

@@ -1,0 +1,141 @@
+.clientes-container {
+  padding: 24px;
+  background: #fafafa;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 0 8px;
+}
+
+.header h2 {
+  margin: 0;
+  color: #333;
+  font-weight: 600;
+  font-size: 1.8rem;
+}
+
+.search-bar {
+  margin-bottom: 20px;
+  padding: 0 8px;
+}
+
+.search-field {
+  width: 100%;
+  max-width: 400px;
+}
+
+.table-container {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+table {
+  width: 100%;
+}
+
+.nombre-cell {
+  display: flex;
+  align-items: center;
+}
+
+.nombre {
+  font-weight: 500;
+  color: #333;
+}
+
+.celular-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.phone-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #666;
+}
+
+.direccion {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.acciones-header {
+  text-align: center;
+  width: 120px;
+}
+
+.acciones-cell {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+
+.no-data {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+}
+
+.no-data mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.no-data p {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+/* Estilos para las filas */
+.mat-mdc-header-cell {
+  background: #f5f5f5;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.mat-mdc-cell {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .clientes-container {
+    padding: 16px;
+  }
+  
+  .header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  
+  .header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .search-field {
+    max-width: 100%;
+  }
+  
+  .acciones-cell {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

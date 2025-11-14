@@ -6,11 +6,15 @@ import { CompartidosModule } from '../compartidos/compartidos-module';
 import { RestauranteServices } from './servicios/restaurante.service';
 import { ModalRestaurante } from './modales/modal-restaurante/modal-restaurante';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ListadoCliente } from './pages/listado-cliente/listado-cliente';
+import { ModalListadoCliente } from './modales/modal-listado-cliente/modal-listado-cliente';
 
 @NgModule({
   declarations: [
     Restaurante,
-    ModalRestaurante
+    ModalRestaurante,
+    ListadoCliente,
+    ModalListadoCliente
   ],
   imports: [
     CommonModule,
