@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 
 export interface Pedido {
@@ -11,6 +11,8 @@ export interface Pedido {
   telefono?: string;
   repartidor?: string;
   tiempo?: string;
+  tiempoTranscurrido?: number; // Nuevo: para llevar el conteo en minutos
+  tiempoInterval?: any; // Nuevo: para el intervalo del cronómetro
 }
 
 @Component({
@@ -19,14 +21,11 @@ export interface Pedido {
   styleUrls: ['./restaurante.css'],
   standalone: false,
 })
-export class Restaurante implements OnInit {
+export class Restaurante implements OnInit, OnDestroy {
   selectedTab: 'mostrador' | 'domicilio' = 'mostrador';
   mostrarModalNuevoPedido = false;
 
-  // 🔥 CORREGIDO: Definir columnas separadas para cada tipo
   columnasMostrador: string[] = ['id', 'hora', 'estado', 'cliente', 'total', 'acciones'];
-  
-  // 🔥 CORREGIDO: Columnas para domicilio sin estado (ya que tenemos columnas específicas)
   columnasDomicilioPendientes: string[] = ['id', 'hora', 'direccion', 'telefono', 'cliente', 'repartidor', 'tiempo', 'total', 'acciones'];
   columnasDomicilioGenerales: string[] = ['id', 'hora', 'estado', 'cliente', 'total', 'acciones'];
   columnasSoloLectura: string[] = ['id', 'hora', 'estado', 'cliente', 'total'];
@@ -41,8 +40,11 @@ export class Restaurante implements OnInit {
 
   constructor() { }
 
-  ngOnInit(): void {
-    this.cargarDatosIniciales();
+  ngOnInit(): void { }
+
+  ngOnDestroy(): void {
+    // Limpiar todos los intervalos al destruir el componente
+    this.limpiarTodosLosIntervalos();
   }
 
   selectTab(tab: 'mostrador' | 'domicilio') {
@@ -65,10 +67,16 @@ export class Restaurante implements OnInit {
 
   // 🔥 MÉTODO: Enviar pedido a la tabla de enviados
   enviarPedido(pedido: Pedido, tablaOrigen: string) {
+    // Detener el cronómetro del pedido
+    if (pedido.tiempoInterval) {
+      clearInterval(pedido.tiempoInterval);
+    }
+
     const pedidoEnviado: Pedido = {
       ...pedido,
       estado: 'Enviado',
-      hora: new Date().toLocaleTimeString()
+      hora: new Date().toLocaleTimeString(),
+      tiempoInterval: undefined // Limpiar el intervalo
     };
 
     // Agregar a la tabla de enviados
@@ -104,8 +112,10 @@ export class Restaurante implements OnInit {
       id: this.generarId(),
       hora: new Date().toLocaleTimeString(),
       estado: 'Pendiente',
-      cliente: pedidoData.data.cliente || 'Cliente',
-      total: pedidoData.data.total || 0
+      cliente: pedidoData.data.nombre || 'Cliente',
+      total: pedidoData.data.total || 0,
+      tiempoTranscurrido: 0, // Iniciar en 0 minutos
+      tiempo: '0 min' // Tiempo inicial formateado
     };
 
     if (pedidoData.tipo === 'mostrador') {
@@ -115,12 +125,14 @@ export class Restaurante implements OnInit {
       const pedidoDomicilio: Pedido = {
         ...nuevoPedido,
         direccion: pedidoData.data.direccion || 'Sin dirección',
-        telefono: pedidoData.data.telefono || 'Sin teléfono',
-        repartidor: 'Asignar',
-        tiempo: '30 min'
+        telefono: pedidoData.data.celular || 'Sin teléfono',
+        repartidor: pedidoData.data.repartidor || 'Asignar'
       };
       this.agregarPedidoDomicilio(pedidoDomicilio);
     }
+
+    // Iniciar cronómetro para el nuevo pedido
+    this.iniciarCronometro(nuevoPedido);
   }
 
   private agregarPedidoMostrador(pedido: Pedido) {
@@ -133,80 +145,76 @@ export class Restaurante implements OnInit {
     this.pendientesDomicilio.data = [...datosActuales, pedido];
   }
 
-  private generarId(): number {
-    return Math.floor(Math.random() * 1000) + 1;
+  // Método para iniciar el cronómetro de un pedido
+  private iniciarCronometro(pedido: Pedido): void {
+    const intervalo = setInterval(() => {
+      // Encontrar el pedido en todas las tablas y actualizar su tiempo
+      this.actualizarTiempoPedido(pedido.id);
+    }, 60000); // Actualizar cada minuto
+
+    // Guardar la referencia del intervalo en el pedido
+    pedido.tiempoInterval = intervalo;
   }
 
-  private cargarDatosIniciales() {
-    // Datos de ejemplo para testing - MOSTRADOR
-    this.pendientes.data = [
-      { id: 2001, hora: '14:20', estado: 'Pendiente', cliente: 'Cliente Mostrador 1', total: 25000 },
-      { id: 2002, hora: '14:25', estado: 'Pendiente', cliente: 'Cliente Mostrador 2', total: 18000 }
-    ];
+  // Método para actualizar el tiempo de un pedido específico
+  private actualizarTiempoPedido(pedidoId: number): void {
+    // Buscar y actualizar en todas las tablas
+    this.actualizarTiempoEnTabla(this.pendientes, pedidoId);
+    this.actualizarTiempoEnTabla(this.pendientesDomicilio, pedidoId);
+    this.actualizarTiempoEnTabla(this.enPreparacion, pedidoId);
+    this.actualizarTiempoEnTabla(this.enCurso, pedidoId);
+  }
 
-    this.enCurso.data = [
-      { id: 2003, hora: '14:15', estado: 'En preparación', cliente: 'Cliente Mostrador 3', total: 32000 }
-    ];
-
-    this.cerradas.data = [
-      { id: 2000, hora: '14:00', estado: 'Completado', cliente: 'Cliente Mostrador 0', total: 28000 }
-    ];
-
-    // Datos de ejemplo para testing - DOMICILIO
-    this.pendientesDomicilio.data = [
-      {
-        id: 1001,
-        hora: '14:30',
-        estado: 'Pendiente',
-        cliente: 'Juan Pérez',
-        total: 45000,
-        direccion: 'Calle 123 #45-67',
-        telefono: '3001234567',
-        repartidor: 'Carlos López',
-        tiempo: '25 min'
+  // Método genérico para actualizar tiempo en una tabla
+  private actualizarTiempoEnTabla(tabla: MatTableDataSource<Pedido>, pedidoId: number): void {
+    const pedidosActualizados = tabla.data.map(pedido => {
+      if (pedido.id === pedidoId) {
+        const nuevoTiempo = (pedido.tiempoTranscurrido || 0) + 1;
+        return {
+          ...pedido,
+          tiempoTranscurrido: nuevoTiempo,
+          tiempo: this.formatearTiempo(nuevoTiempo)
+        };
       }
+      return pedido;
+    });
+
+    tabla.data = [...pedidosActualizados];
+  }
+
+  // Método para formatear el tiempo (minutos a texto)
+  private formatearTiempo(minutos: number): string {
+    if (minutos < 60) {
+      return `${minutos} min`;
+    } else {
+      const horas = Math.floor(minutos / 60);
+      const mins = minutos % 60;
+      return `${horas}h ${mins}min`;
+    }
+  }
+
+  // Método para limpiar todos los intervalos al destruir el componente
+  private limpiarTodosLosIntervalos(): void {
+    const todasLasTablas = [
+      this.pendientes,
+      this.pendientesDomicilio,
+      this.enPreparacion,
+      this.enCurso,
+      this.enviados,
+      this.cerradas,
+      this.cerradosDomicilio
     ];
 
-    this.enPreparacion.data = [
-      {
-        id: 1003,
-        hora: '14:15',
-        estado: 'En preparación',
-        cliente: 'Roberto Silva',
-        total: 28000,
-        direccion: 'Carrera 56 #12-34',
-        telefono: '3155558888',
-        repartidor: 'Pedro Rodríguez',
-        tiempo: '15 min'
-      }
-    ];
+    todasLasTablas.forEach(tabla => {
+      tabla.data.forEach(pedido => {
+        if (pedido.tiempoInterval) {
+          clearInterval(pedido.tiempoInterval);
+        }
+      });
+    });
+  }
 
-    this.enviados.data = [
-      {
-        id: 1000,
-        hora: '13:45',
-        estado: 'Enviado',
-        cliente: 'Cliente Enviado',
-        total: 35000,
-        direccion: 'Av. Siempre Viva 742',
-        telefono: '3001112233',
-        repartidor: 'Ana Gómez',
-        tiempo: 'Entregado'
-      }
-    ];
-
-    this.cerradosDomicilio.data = [
-      {
-        id: 999,
-        hora: '13:30',
-        estado: 'Entregado',
-        cliente: 'Cliente Cerrado',
-        total: 42000,
-        direccion: 'Calle Falsa 123',
-        telefono: '3004445566',
-        repartidor: 'Luis Martínez',
-        tiempo: 'Completado'
-      }
-    ];
+  private generarId(): number {
+    return Math.floor(Math.random() * 1000) + 1;
   }
 }
